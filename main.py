@@ -1,5 +1,5 @@
 # space invaders stuff
-# https://youtu.be/PFMoo_dvhyw?t=6998
+# https://youtu.be/PFMoo_dvhyw?t=7424
 
 import pygame
 import sys, random
@@ -19,6 +19,10 @@ pygame.init()
 font = pygame.font.Font(None, 40)
 levelSurface = font.render("LEVEL 01", False, Colors.YELLOW)
 gameOverSurface = font.render("GAME OVER", False, Colors.YELLOW)
+scoreTextSurface = font.render("SCORE", False, Colors.YELLOW)
+playerTextSurface = font.render("PLAYER", False, Colors.YELLOW)
+playerNameSurface = font.render("STEFANITA", False, Colors.YELLOW)
+levelFinishedSurface = font.render("LEVEL FINISHED", False, Colors.YELLOW)
 
 screen = pygame.display.set_mode((SCREEN_WIDTH + OFFSET, SCREEN_HEIGHT + (2 * OFFSET)))
 pygame.display.set_caption("Silly Space Invaders")
@@ -57,6 +61,7 @@ while True:
         game.alienLasersGroup.update()
         game.mysteryShipGroup.update()
         game.checkForCollisions()
+        game.checkLevelWasWon()
 
     # draw objects on screen
     screen.fill(Colors.GRAY)
@@ -65,10 +70,20 @@ while True:
     if game.run:
         screen.blit(levelSurface, (570, 740, 50, 50))
     else:
-        screen.blit(gameOverSurface, (570, 740, 50, 50))
+        if game.hasWonLevel:
+            screen.blit(levelFinishedSurface, (540, 740, 50, 50))
+        else:
+            screen.blit(gameOverSurface, (570, 740, 50, 50))
 
     for life in range(game.lives):
         screen.blit(game.spaceshipGroup.sprite.image, (50 + (life * 50), 745))
+
+    screen.blit(scoreTextSurface, (50, 15, 50, 50))
+    scoreSurface = font.render(str(game.score), False, Colors.YELLOW)
+    screen.blit(scoreSurface, (50, 40, 50, 50))
+
+    screen.blit(playerTextSurface, (600, 15, 50, 50))
+    screen.blit(playerNameSurface, (600, 40, 50, 50))
 
 
     game.spaceshipGroup.draw(screen)

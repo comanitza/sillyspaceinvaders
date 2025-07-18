@@ -24,6 +24,9 @@ class Game:
 
         self.lives = 3
         self.run = True
+        self.hasWonLevel = False
+
+        self.score = 0
 
 
     def createObstacles(self):
@@ -91,11 +94,17 @@ class Game:
         # spaceship lasers
         if self.spaceshipGroup.sprite.lasersGroup:
             for laser in self.spaceshipGroup.sprite.lasersGroup:
-                if pygame.sprite.spritecollide(laser, self.aliensGroup, True):
+                aliensHit = pygame.sprite.spritecollide(laser, self.aliensGroup, True)
+
+                if aliensHit:
                     laser.kill()
+
+                for alien in aliensHit:
+                    self.score += int(100 * alien.type)
 
                 if pygame.sprite.spritecollide(laser, self.mysteryShipGroup, True):
                     laser.kill()
+                    self.score += 1000
 
                 for obstacle in self.obstacles:
                     if pygame.sprite.spritecollide(laser, obstacle.blocksGroup, True):
@@ -135,6 +144,11 @@ class Game:
         print("Game Over :( press ESC to restart")
         self.run = False
 
+    def checkLevelWasWon(self):
+        if not self.hasWonLevel and not self.aliensGroup:
+            self.hasWonLevel = True
+            self.run = False
+            print("Level was won!")
 
     def reset(self):
         self.lives = 3
@@ -148,3 +162,6 @@ class Game:
         self.obstacles = self.createObstacles()
 
         self.run = True
+        self.hasWonLevel = False
+
+        self.score = 0
