@@ -3,8 +3,18 @@ import random
 import pygame
 from utils import Colors
 
+
+from enum import Enum
+
+class Action(Enum):
+    LEFT = 1
+    RIGHT = 2
+    SHOOT = 3
+    STAY = 4
+
+
 class Spaceship(pygame.sprite.Sprite):
-    def __init__(self, screenWidth, screenHeight, offset):
+    def __init__(self, screenWidth, screenHeight, offset, isAiPlayer = False):
         super(Spaceship, self).__init__()
 
         self.screenWidth = screenWidth
@@ -21,8 +31,17 @@ class Spaceship(pygame.sprite.Sprite):
         self.laserTime = 0
         self.laserDelay = 300
 
+        self.actions = []
+        self.isAiPlayer = isAiPlayer
 
+
+    def performAction(self, action: Action):
+        self.actions.append(action)
+
+    # todo aici trebuie sa schimb
+    # todo fac metode de move si le chem din runner
     def getUserInput(self):
+        actions = self.actions
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_RIGHT]:
@@ -35,6 +54,9 @@ class Spaceship(pygame.sprite.Sprite):
                 self.lasersGroup.add(Laser(self.rect.center, 5, self.screenHeight))
                 self.laserReady = False
                 self.laserTime = pygame.time.get_ticks()
+
+
+        self.actions.clear() # clear all
 
 
     def update(self):
@@ -66,11 +88,11 @@ class Spaceship(pygame.sprite.Sprite):
 
 
 class Laser(pygame.sprite.Sprite):
-    def __init__(self, position, speed, screenHeight):
+    def __init__(self, position, speed, screenHeight, color = Colors.YELLOW):
         super(Laser, self).__init__()
 
         self.image = pygame.Surface((4, 15))
-        self.image.fill(Colors.YELLOW)
+        self.image.fill(color)
         self.rect = self.image.get_rect(center = position)
 
         self.speed = speed

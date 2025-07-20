@@ -1,5 +1,5 @@
 import pygame, random
-from gameelements import Spaceship, Obstacle, grid, Alien, Laser, MysteryShip
+from gameelements import Spaceship, Obstacle, grid, Alien, Laser, MysteryShip, Colors
 
 
 class Game:
@@ -84,7 +84,7 @@ class Game:
         if self.aliensGroup.sprites():
             alien = random.choice(self.aliensGroup.sprites())
 
-            self.alienLasersGroup.add(Laser(alien.rect.center, -4, self.screeHeight))
+            self.alienLasersGroup.add(Laser(alien.rect.center, -4, self.screeHeight, Colors.RED))
 
 
     def createMysteryShip(self):
