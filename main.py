@@ -3,7 +3,7 @@
 
 import pygame
 import sys, random
-from gameelements import Spaceship, Obstacle
+from gameelements import Spaceship, Obstacle, Action
 from game import Game
 
 from utils import Colors
@@ -40,6 +40,17 @@ class GameRunner:
 
     def playGame(self):
         while True:
+
+            # todo handle player or AI inputs
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_RIGHT]:
+                self.game.spaceship.performAction(Action.RIGHT)
+            elif keys[pygame.K_LEFT]:
+                self.game.spaceship.performAction(Action.LEFT)
+
+            if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
+                self.game.spaceship.performAction(Action.SHOOT)
+
             # event handling
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

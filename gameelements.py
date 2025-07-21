@@ -38,23 +38,21 @@ class Spaceship(pygame.sprite.Sprite):
     def performAction(self, action: Action):
         self.actions.append(action)
 
-    # todo aici trebuie sa schimb
-    # todo fac metode de move si le chem din runner
     def getUserInput(self):
         actions = self.actions
-        keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_RIGHT]:
-            self.rect.x += self.speed
-        elif keys[pygame.K_LEFT]:
-            self.rect.x -= self.speed
+        for action in actions:
+            if action == Action.RIGHT:
+                self.rect.x += self.speed
 
-        if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
-            if self.laserReady:
-                self.lasersGroup.add(Laser(self.rect.center, 5, self.screenHeight))
-                self.laserReady = False
-                self.laserTime = pygame.time.get_ticks()
+            if action == Action.LEFT:
+                self.rect.x -= self.speed
 
+            if action == Action.SHOOT:
+                if self.laserReady:
+                    self.lasersGroup.add(Laser(self.rect.center, 5, self.screenHeight))
+                    self.laserReady = False
+                    self.laserTime = pygame.time.get_ticks()
 
         self.actions.clear() # clear all
 
