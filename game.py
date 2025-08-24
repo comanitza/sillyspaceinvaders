@@ -39,7 +39,7 @@ class Game:
             offsetX = (i + 1) * gap + i * obstacleWidth
             obstacles.append(Obstacle(offsetX, self.screeHeight - 100))
 
-        return obstacles
+        return [] #obstacles # todo hack
 
 
     def createAliens(self):
@@ -84,7 +84,7 @@ class Game:
         if self.aliensGroup.sprites():
             alien = random.choice(self.aliensGroup.sprites())
 
-            self.alienLasersGroup.add(Laser(alien.rect.center, -4, self.screeHeight, Colors.RED))
+            self.alienLasersGroup.add(Laser(alien.rect.center, -4, self.screeHeight, Colors.GREEN))
 
 
     def createMysteryShip(self):
@@ -165,3 +165,17 @@ class Game:
         self.hasWonLevel = False
 
         self.score = 0
+
+    def isGameRunning(self):
+        return self.run
+
+    def isAlienBelowSpaceShip(self) -> bool:
+
+        aliensPosition = list(map(lambda s: (s.rect.x, s.rect.y), self.aliensGroup.sprites()))
+        spaceshipPosition = (self.spaceship.rect.x, self.spaceship.rect.y)
+
+        for alien in aliensPosition:
+            if alien[1] >= spaceshipPosition[1]:
+                return True
+
+        return False

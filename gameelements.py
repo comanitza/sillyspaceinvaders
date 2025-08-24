@@ -10,8 +10,6 @@ class Action(Enum):
     LEFT = 1
     RIGHT = 2
     SHOOT = 3
-    STAY = 4
-
 
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, screenWidth, screenHeight, offset, isAiPlayer = False):
