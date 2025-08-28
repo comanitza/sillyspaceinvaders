@@ -3,24 +3,12 @@
 # https://youtu.be/L8ypSXwyBds?t=5749
 
 from gamerunner import GameRunner
-from gameelements import Action
 from agent import Agent
 import torch
 import matplotlib.pyplot as plt
 import time
 
 print("starting silly space invaders")
-
-
-# if False:
-#     runner.playGame()
-# else:
-#     agent = Agent()
-#     #agent.model.load_state_dict(torch.load("D:\pythonwork\games\sillyspaceinvaders\models\model1755893650.291997.pth", weights_only=True))
-#     #agent.model.load_state_dict(torch.load("D:\pythonwork\games\sillyspaceinvaders\models\model_320_1755977226.7062056.pth", weights_only=True))
-#     # agent.model.load_state_dict(torch.load("D:\pythonwork\games\sillyspaceinvaders\models\model_360_1755990345.0241191.pth", weights_only=True))
-#     # agent.model.load_state_dict(torch.load("D:\pythonwork\games\sillyspaceinvaders\models\model_360_1755990345.0241191.pth", weights_only=True))
-
 
 def playGameAsHuman():
     runner = GameRunner(playerName="HUMAN")
@@ -46,33 +34,46 @@ def playSimulationAsLowerTrainedModel():
     print(f"simulation score: {score}")
 
 def playSimulationAsHighlyTrainedModel():
-    score = playSimulationWithModel("models\model_360_1755990345.0241191.pth", "TRAINED 400")
+    score = playSimulationWithModel("models\model_520_1756057607.2338269.pth", "TRAINED 520")
 
     print(f"simulation score: {score}")
 
 
-def simulateTwoModelsComparison(modelA, modelAName, modelB, modelBName, iterations: int = 10):
+def simulateTwoModelsComparison(modelTuples:[(str, str)], iterations: int = 10):
     labels = []
-    scoresA = []
-    scoresB = []
+    scoresMap = {}
 
-    for i in range(iterations):
+    for t in modelTuples:
+        scoresMap[t[1]] = []
+
+    for i in range(1, iterations + 1):
         print(f"starting iteration {i}")
-        scoresA.append(playSimulationWithModel(modelA, modelAName))
-        scoresB.append(playSimulationWithModel(modelB, modelBName))
+
+        for t in modelTuples:
+            score = playSimulationWithModel(t[0], t[1])
+            scoresMap[t[1]].append(score)
+            print(f"Model {t[1]} finished with score {score}")
 
         labels.append(i)
 
+    mergedKeys = "_".join(str(k) for k in scoresMap.keys())
 
-    plt.plot(labels, scoresA, label = modelAName)
-    plt.plot(labels, scoresB, label = modelBName)
-    plt.savefig(f"graphs/{modelAName}_{modelBName}_{iterations}_{time.time()}.png")
+    plt.title("Models Comparison")
+
+    for modelName, scores in scoresMap.items():
+        plt.plot(labels, scores, label = modelName)
+
+    plt.legend(scoresMap.keys(), loc="lower right")
+    plt.savefig(f"graphs/comparison_{mergedKeys}_{iterations}_{time.time()}.png")
 
 
-def simulateLowAndHighlyTrainedModel():
-    simulateTwoModelsComparison("models\model1755893650.291997.pth", "TRAINED 40", "models\model_360_1755990345.0241191.pth", "TRAINED 400", iterations=5)
+def simulateTrainedModelComparison():
+    simulateTwoModelsComparison(
+        [("models\model_40_1755893650.291997.pth", "TRAINED 40"),
+         ("models\model_200_1755964576.2514975.pth", "TRAINED 200"),
+         ("models\model_560_1756394589.1294146.pth", "TRAINED 560")], iterations=5)
 
 # run things
-simulateLowAndHighlyTrainedModel()
+simulateTrainedModelComparison()
 
 print("### ok, all done")

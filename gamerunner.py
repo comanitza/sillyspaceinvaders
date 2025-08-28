@@ -207,7 +207,7 @@ class GameRunner:
 
         enemyStraigth, enemyRight, enemyLeft = self.enemyPositionFromShip(spaceshipPosition, aliensPosition)
 
-        isSpaceshipInTheCenter = int(spaceshipPosition[0] > 200 and spaceshipPosition[0] < 560)
+        isSpaceshipInTheCenter = int(spaceshipPosition[0] > 120 and spaceshipPosition[0] < 400)
 
         state = [dangerStraigth, dangerRight, dangerLeft,
                  isUnderCover,
