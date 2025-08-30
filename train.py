@@ -4,7 +4,7 @@ from gamerunner import GameRunner
 
 
 def trainAgentWithDisaply():
-    numberOfEpochs = 560
+    numberOfEpochs = 562
     print(f"started training agent with display on {numberOfEpochs} epochs ... ")
     scores = []
     averageScores = []
@@ -157,6 +157,9 @@ def trainAgentWithDisaply():
 
         print(f"Game finished with score {localScore}")
         scores.append(localScore)
+
+        if i in {5, 10, 20, 40, 80, 120, 200, 400}:
+            agent.model.save(epochs=i)
 
     print(scores)
     agent.model.save(epochs=numberOfEpochs)

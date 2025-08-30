@@ -7,7 +7,7 @@ from utils import Colors
 
 class GameRunner:
 
-    def __init__(self, playerName = "HUMAN", isAiPlaying = False):
+    def __init__(self, playerName = "HUMAN", isAiPlaying = False, includeObstacles=False):
         SCREEN_WIDTH = 750
         SCREEN_HEIGHT = 700
         OFFSET = 50
@@ -27,7 +27,7 @@ class GameRunner:
 
         self.clock = pygame.time.Clock()
 
-        self.game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET)
+        self.game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET, includeObstacles)
         self.SHOT_LASER = pygame.USEREVENT
         pygame.time.set_timer(self.SHOT_LASER, 1200)
 
@@ -207,7 +207,7 @@ class GameRunner:
 
         enemyStraigth, enemyRight, enemyLeft = self.enemyPositionFromShip(spaceshipPosition, aliensPosition)
 
-        isSpaceshipInTheCenter = int(spaceshipPosition[0] > 120 and spaceshipPosition[0] < 400)
+        isSpaceshipInTheCenter = int(spaceshipPosition[0] > 320 and spaceshipPosition[0] < 600)
 
         state = [dangerStraigth, dangerRight, dangerLeft,
                  isUnderCover,
@@ -233,10 +233,8 @@ class GameRunner:
 
         if enemyStraigth == 1:
             newReward += 30
-            # print("enemy up")
         else:
-            newReward -= 30
-            # print("no enemy")
+            newReward -= 5
 
 
         if self.game.run == False and self.game.hasWonLevel == False:

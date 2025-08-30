@@ -11,8 +11,8 @@ import time
 print("starting silly space invaders")
 
 def playGameAsHuman():
-    runner = GameRunner(playerName="HUMAN")
-    runner.game.lives = 1
+    runner = GameRunner(playerName="HUMAN", includeObstacles=True)
+    runner.game.lives = 3
 
     runner.playGame()
 
@@ -65,15 +65,19 @@ def simulateTwoModelsComparison(modelTuples:[(str, str)], iterations: int = 10):
 
     plt.legend(scoresMap.keys(), loc="lower right")
     plt.savefig(f"graphs/comparison_{mergedKeys}_{iterations}_{time.time()}.png")
+    plt.close()
 
 
 def simulateTrainedModelComparison():
     simulateTwoModelsComparison(
-        [("models\model_40_1755893650.291997.pth", "TRAINED 40"),
-         ("models\model_200_1755964576.2514975.pth", "TRAINED 200"),
-         ("models\model_560_1756394589.1294146.pth", "TRAINED 560")], iterations=5)
+        [("models\model_40_1755893650.291997.pth", "MODEL 40"),
+         ("models\model_200_1755964576.2514975.pth", "MODEL 200"),
+         ("models\model_562A_1756522638.3977141.pth", "MODEL 562A")], iterations=5)
 
 # run things
 simulateTrainedModelComparison()
+
+# play as human
+#playGameAsHuman()
 
 print("### ok, all done")

@@ -3,11 +3,12 @@ from gameelements import Spaceship, Obstacle, grid, Alien, Laser, MysteryShip, C
 
 
 class Game:
-    def __init__(self, screenWidth, screeHeight, offset):
+    def __init__(self, screenWidth, screeHeight, offset, includeObstacles=False):
 
         self.screenWidth = screenWidth
         self.screeHeight = screeHeight
         self.offset = offset
+        self.includeObstacles = includeObstacles
 
         self.spaceship = Spaceship(screenWidth, screeHeight, offset)
         self.spaceshipGroup = pygame.sprite.GroupSingle()
@@ -30,6 +31,9 @@ class Game:
 
 
     def createObstacles(self):
+        if not self.includeObstacles:
+            return []
+
         obstacleWidth = len(grid[0]) * 3
         gap = ((self.screenWidth + self.offset) - (4 * obstacleWidth)) / 5
 
@@ -39,7 +43,7 @@ class Game:
             offsetX = (i + 1) * gap + i * obstacleWidth
             obstacles.append(Obstacle(offsetX, self.screeHeight - 100))
 
-        return [] #obstacles # todo hack
+        return obstacles
 
 
     def createAliens(self):
