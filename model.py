@@ -26,7 +26,7 @@ class LinearQNet(nn.Module):
     def save(self, epochs):
         import time
 
-        path = f"models/model_incremental_{epochs}_{time.time()}.pth"
+        path = f"models/model_{epochs}B_{time.time()}.pth"
         torch.save(self.state_dict(), path)
 
 

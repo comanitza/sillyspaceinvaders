@@ -7,7 +7,7 @@ from utils import Colors
 
 class GameRunner:
 
-    def __init__(self, playerName = "HUMAN", isAiPlaying = False, includeObstacles=False):
+    def __init__(self, playerName = "HUMAN", includeObstacles=False, infinityMode=False):
         SCREEN_WIDTH = 750
         SCREEN_HEIGHT = 700
         OFFSET = 50
@@ -27,19 +27,20 @@ class GameRunner:
 
         self.clock = pygame.time.Clock()
 
-        self.game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET, includeObstacles)
+        self.game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET, includeObstacles, infinityMode)
         self.SHOT_LASER = pygame.USEREVENT
         pygame.time.set_timer(self.SHOT_LASER, 1200)
 
         self.MYSTERY_SHIP = pygame.USEREVENT + 1
         pygame.time.set_timer(self.MYSTERY_SHIP, random.randint(10_000, 40_000))
-        self.isAiPlaying = isAiPlaying
 
-        # self.previousReward = 0
+        if infinityMode:
+            self.MOVE_ALIENS_DOWN = pygame.USEREVENT + 2
+            pygame.time.set_timer(self.MOVE_ALIENS_DOWN, 2_000)
 
         self.state = [0, 0, 0, 0, 0, 0, 0, 0]
-        # self.previousScore = 0
 
+        self.infinityMode = infinityMode
 
 
     def simulate(self, agent = None):
@@ -146,8 +147,6 @@ class GameRunner:
 
     def computeNextAction(self) -> Action:
         import random
-        # from position import Move
-
         return random.choice(list(Action))
 
     def simulateGame(self):
@@ -169,14 +168,8 @@ class GameRunner:
         # self.game.spaceshipGroup.sprite.lasersGroup.draw(self.screen)
 
         aliensPosition = list(map(lambda s: (s.rect.x, s.rect.y), self.game.aliensGroup.sprites()))
-        # print(len(aliensPosition), self.game.score)
-
-        # obstaclePositions = list(map(lambda s: (s.rect.x, s.rect.y), self.game.obstacles.sprites()))
 
         spaceshipPosition = (self.game.spaceship.rect.x, self.game.spaceship.rect.y)
-        # self.performAction(Action.RIGHT)
-
-        # print(spaceshipPosition)
 
         totalObstaclePixels = []
 
@@ -184,26 +177,15 @@ class GameRunner:
             obstacle.blocksGroup.sprites()
             totalObstaclePixels.append(list(map(lambda s: (s.rect.x, s.rect.y), obstacle.blocksGroup.sprites())))
 
-        # print(len(totalObstaclePixels))
-
         lasersPositions  = list(map(lambda s: (s.rect.x, s.rect.y), self.game.alienLasersGroup.sprites()))
 
-        # print("laser frate!", lasersPositions)
-        # rewardDelta = 100 * (50 - len(aliensPosition)) - self.previousReward
-        # self.previousReward = 100 * (50 - len(aliensPosition))
 
-        # [danger straight, danger right, danger left,
-        # isUnderCover,
-        # enemy straigth, enemy right, enemy left]
-
+        #
         dangerStraigth, dangerRight, dangerLeft = self.dangerPositionFromShip(spaceshipPosition, lasersPositions)
 
-        # coverStraight = 0
-        # coverRight = 0
-        # coverLeft = 0
 
+        # this is currently not used
         isUnderCover = self.isShipUnderCover(spaceshipPosition, totalObstaclePixels)
-
 
         enemyStraigth, enemyRight, enemyLeft = self.enemyPositionFromShip(spaceshipPosition, aliensPosition)
 
@@ -215,9 +197,9 @@ class GameRunner:
                  isSpaceshipInTheCenter]
 
 
+        # save the state
         self.state = state
 
-        # scoreToReturn = self.game.score - self.previousScore
         newReward = 0
 
         if initialAlienCount > len(aliensPosition):
@@ -226,10 +208,9 @@ class GameRunner:
 
         if isSpaceshipInTheCenter == 1 and dangerStraigth == 0:
             newReward += 50
-            # print("in the middle baby!!!")
 
         if dangerStraigth:
-            newReward = -100 #ovridde it
+            newReward = -100
 
         if enemyStraigth == 1:
             newReward += 30
@@ -263,17 +244,6 @@ class GameRunner:
         coverRight = 0
         coverLeft = 0
 
-        # if len(lasersPositions) >= 2:
-        #     print(lasersPositions)
-
-        # for laserPosition in lasersPositions:
-        #     if abs(laserPosition[0] - spaceshipPosition[0]) < 10:
-        #         coverStraight = 1
-        #     elif laserPosition[0] > spaceshipPosition[0]:
-        #         coverRight = 1
-        #     elif laserPosition[0] < spaceshipPosition[0]:
-        #         coverLeft = 1
-
         if lasersPositions:
             laserPosition = lasersPositions[0]
 
@@ -284,8 +254,6 @@ class GameRunner:
             elif laserPosition[0] < spaceshipPosition[0]:
                 coverLeft = 1
 
-
-        # todo sa-l fac sa returneze doar una dintre pozitii, cea mai apropiata
         return [coverStraight, coverRight, coverLeft]
 
 
@@ -308,18 +276,14 @@ class GameRunner:
     def playGame(self):
         while True:
 
-            # todo handle player or AI inputs
-            if self.isAiPlaying:
-                self.game.spaceship.performAction(self.computeNextAction())
-            else:
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_RIGHT]:
-                    self.game.spaceship.performAction(Action.RIGHT)
-                elif keys[pygame.K_LEFT]:
-                    self.game.spaceship.performAction(Action.LEFT)
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_RIGHT]:
+                self.game.spaceship.performAction(Action.RIGHT)
+            elif keys[pygame.K_LEFT]:
+                self.game.spaceship.performAction(Action.LEFT)
 
-                if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
-                    self.game.spaceship.performAction(Action.SHOOT)
+            if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
+                self.game.spaceship.performAction(Action.SHOOT)
 
             # event handling
             for event in pygame.event.get():
@@ -334,18 +298,32 @@ class GameRunner:
                     self.game.createMysteryShip()
                     pygame.time.set_timer(self.MYSTERY_SHIP, random.randint(10_000, 40_000))
 
+
+                if self.infinityMode and event.type == self.MOVE_ALIENS_DOWN and self.game.run:
+                    self.game.moveAliensDown(4)
+                    pygame.time.set_timer(self.MOVE_ALIENS_DOWN, 2_000)
+
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and not self.game.run:
                     self.game.reset()
 
             # updateing
             if self.game.run:
                 self.game.spaceshipGroup.update()
-                self.game.moveAliens()
+
+                if not self.infinityMode:
+                    self.game.moveAliens()
+
                 self.game.alienLasersGroup.update()
                 self.game.mysteryShipGroup.update()
                 self.game.checkForCollisions()
-                self.game.checkLevelWasWon()
 
+                if self.infinityMode:
+                    self.game.addFreshAliensIFNeeded()
+                else:
+                    self.game.checkLevelWasWon()
+
+
+            # if the aliens are to low the game is lost
             if self.game.run and self.game.isAlienBelowSpaceShip():
                 print("Game over due to aliens too low")
                 self.game.gameOver()

@@ -3,7 +3,7 @@ from gameelements import Spaceship, Obstacle, grid, Alien, Laser, MysteryShip, C
 
 
 class Game:
-    def __init__(self, screenWidth, screeHeight, offset, includeObstacles=False):
+    def __init__(self, screenWidth, screeHeight, offset, includeObstacles=False, infinityMode=False):
 
         self.screenWidth = screenWidth
         self.screeHeight = screeHeight
@@ -17,7 +17,12 @@ class Game:
         self.obstacles = self.createObstacles()
 
         self.aliensGroup = pygame.sprite.Group()
-        self.createAliens()
+
+        if infinityMode:
+            self.createSparseAliens()
+        else:
+            self.createAliens()
+
         self.aliensDirection = 1
         self.alienLasersGroup = pygame.sprite.Group()
 
@@ -62,6 +67,18 @@ class Game:
 
 
                 self.aliensGroup.add(Alien(type, x + (self.offset / 2), y))
+
+
+    def createSparseAliens(self):
+        for row in range(4):
+            for col in range(11):
+                x = (col * 55) + 75
+                y = (row * 55) + 110
+
+                type = random.randint(1, 3)
+
+                if random.randint(0, 100) > 60:
+                    self.aliensGroup.add(Alien(type, x + (self.offset / 2), y))
 
 
     def moveAliens(self):
@@ -153,6 +170,10 @@ class Game:
             self.hasWonLevel = True
             self.run = False
             print("Level was won!")
+
+    def addFreshAliensIFNeeded(self):
+        if self.run and len(self.aliensGroup) <= 5:
+            self.createSparseAliens()
 
     def reset(self):
         self.lives = 3
