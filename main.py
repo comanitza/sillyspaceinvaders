@@ -10,7 +10,13 @@ import time
 
 print("starting silly space invaders")
 
-def playGameAsHuman():
+def playGameClassicModeAsHuman():
+    runner = GameRunner(playerName="HUMAN", includeObstacles=True)
+    runner.game.lives = 3
+
+    runner.playGame()
+
+def playGameInfinityModeAsHuman():
     runner = GameRunner(playerName="HUMAN", infinityMode=True)
     runner.game.lives = 3
 
@@ -106,7 +112,12 @@ def processMean():
 # simulateTrainedModelComparison()
 
 # play as human
-playGameAsHuman()
+# play classic space invaders
+# playGameClassicModeAsHuman()
+
+# play infinity mode space invaders
+playGameInfinityModeAsHuman()
+
 
 # print versions
 # printVersions()

@@ -171,9 +171,13 @@ class Game:
             self.run = False
             print("Level was won!")
 
-    def addFreshAliensIFNeeded(self):
+    def addFreshAliensIFNeeded(self) -> bool:
         if self.run and len(self.aliensGroup) <= 5:
             self.createSparseAliens()
+
+            return True
+
+        return False
 
     def reset(self):
         self.lives = 3

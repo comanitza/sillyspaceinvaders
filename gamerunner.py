@@ -15,7 +15,6 @@ class GameRunner:
         pygame.init()
 
         self.font = pygame.font.Font(None, 40)
-        self.levelSurface = self.font.render("LEVEL 01", False, Colors.YELLOW)
         self.gameOverSurface = self.font.render("GAME OVER", False, Colors.YELLOW)
         self.scoreTextSurface = self.font.render("SCORE", False, Colors.YELLOW)
         self.playerTextSurface = self.font.render("PLAYER", False, Colors.YELLOW)
@@ -41,6 +40,7 @@ class GameRunner:
         self.state = [0, 0, 0, 0, 0, 0, 0, 0]
 
         self.infinityMode = infinityMode
+        self.level = 1
 
 
     def simulate(self, agent = None):
@@ -112,6 +112,9 @@ class GameRunner:
                 self.screen.blit(self.scoreTextSurface, (50, 15, 50, 50))
                 scoreSurface = self.font.render(str(self.game.score), False, Colors.YELLOW)
                 self.screen.blit(scoreSurface, (50, 40, 50, 50))
+
+                levelSurface = self.font.render(f"LEVEL {self.convertIntToTwoDigits(self.level)}", False, Colors.YELLOW)
+                self.screen.blit(levelSurface, (50, 40, 50, 50))
 
                 self.screen.blit(self.playerTextSurface, (600, 15, 50, 50))
                 self.screen.blit(self.playerNameSurface, (600, 40, 50, 50))
@@ -318,7 +321,8 @@ class GameRunner:
                 self.game.checkForCollisions()
 
                 if self.infinityMode:
-                    self.game.addFreshAliensIFNeeded()
+                    if self.game.addFreshAliensIFNeeded():
+                        self.level += 1
                 else:
                     self.game.checkLevelWasWon()
 
@@ -333,7 +337,8 @@ class GameRunner:
             pygame.draw.rect(self.screen, Colors.YELLOW, (10, 10, 780, 780), 2, 0, 60, 60, 60, 60)
             pygame.draw.line(self.screen, Colors.YELLOW, (25, 730), (775, 730), 3)
             if self.game.run:
-                self.screen.blit(self.levelSurface, (570, 740, 50, 50))
+                levelSurface = self.font.render(f"LEVEL {self.convertIntToTwoDigits(self.level)}", False, Colors.YELLOW)
+                self.screen.blit(levelSurface, (570, 740, 50, 50))
             else:
                 if self.game.hasWonLevel:
                     self.screen.blit(self.levelFinishedSurface, (540, 740, 50, 50))
@@ -377,3 +382,9 @@ class GameRunner:
             return Action.RIGHT
 
         return Action.SHOOT
+
+    def convertIntToTwoDigits(self, i: int) -> str:
+        if i < 10:
+            return f"0{i}"
+
+        return str(i)
