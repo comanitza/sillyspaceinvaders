@@ -18,6 +18,8 @@ class Game:
 
         self.aliensGroup = pygame.sprite.Group()
 
+        self.infinityMode = infinityMode
+
         if infinityMode:
             self.createSparseAliens()
         else:
@@ -121,7 +123,10 @@ class Game:
                     laser.kill()
 
                 for alien in aliensHit:
-                    self.score += int(100 * alien.type)
+                    if self.infinityMode:
+                        self.score += 100
+                    else:
+                        self.score += int(100 * alien.type)
 
                 if pygame.sprite.spritecollide(laser, self.mysteryShipGroup, True):
                     laser.kill()
